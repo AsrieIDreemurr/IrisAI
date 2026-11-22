@@ -1,0 +1,49 @@
+# 白名单：先忽略全部，只放行要公开的代码和示例配置（见 docs\开源分离方案.md）。
+# 这个目录里私人东西很多（密钥、对话、知识库、模型、日志、沙箱、有许可限制的主题素材），新加的东西默认不上传。
+/*
+!/.gitignore
+!/.gitattributes
+!/README.md
+!/LICENSE
+!/requirements.txt
+!/安装.bat
+
+# 网页服务和网页
+!/hub/
+/hub/.venv/
+__pycache__/
+*.pyc
+# 旧位置的主题（2026-11-14 起在 themes\），万一留着也不上传
+/hub/static/skins/
+
+# 启动、桌面程序和维护脚本（测速、测试、主题导出脚本只在本机用）
+!/scripts/
+/scripts/*
+!/scripts/desktop_app.py
+!/scripts/desktop_pet.py
+!/scripts/busy_check.py
+!/scripts/restart_hub.py
+!/scripts/hub_processes.py
+!/scripts/hub_legacy_window.py
+!/scripts/startup_error.py
+!/scripts/start-llama-swap.ps1
+!/scripts/gen_models.py
+!/scripts/download_models.py
+!/scripts/setup.py
+
+# 配置只放示例；api_key.txt、hub.json、llama-swap.yaml 是本机的
+!/config/
+/config/*
+!/config/*.example.*
+
+# 主题：只放说明，主题本身各自放在本机
+!/themes/
+/themes/*
+!/themes/README.md
+
+# 文档只放给使用者看的
+!/docs/
+/docs/*
+!/docs/安装说明.md
+# README 里的截图
+!/docs/images/

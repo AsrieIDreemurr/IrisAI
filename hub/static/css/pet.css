@@ -1,0 +1,87 @@
+/* 桌宠（js/pet.js）：入口页和工作台共用。只在主题素材里有“看板”时出现（根元素 data-skin-mascot），
+   位置 --pet-x / --pet-y 由 js 算，大小 --pet-h 由各页面定（入口页在 portal.css，工作台在下面） */
+.p-petbox { display: none; }
+:root[data-skin-mascot] { --bub-line: color-mix(in srgb, var(--accent) 22%, var(--line)); }
+:root[data-skin-mascot] .p-petbox { display: block; position: fixed; left: var(--pet-x, 34px); top: var(--pet-y, calc(100vh - var(--pet-h, 200px) - 8px));
+  width: var(--pet-h, 200px); height: var(--pet-h, 200px); z-index: 40; touch-action: none; user-select: none; }
+:root[data-skin-mascot][data-mascot=off] .p-petbox { display: none; }
+.p-pet { position: relative; width: 100%; height: 100%; padding: 0; border: 0; background: none; cursor: grab;
+  animation: p-pet-bob 3.4s ease-in-out infinite; transition: transform .15s; }
+/* 身后的光：模糊的光斑，比径向渐变平滑，深色背景下看不出一圈圈的色阶 */
+.p-pet::before { content: ""; position: absolute; left: 22%; right: 22%; top: 40%; bottom: 6%; border-radius: 50%; pointer-events: none;
+  background: color-mix(in srgb, var(--accent) 40%, transparent); filter: blur(26px); opacity: .45; }
+.p-pet img { position: relative; width: 100%; height: 100%; object-fit: contain; object-position: 50% 100%; display: block; pointer-events: none; -webkit-user-drag: none; transition: rotate .4s ease; }
+.p-pet:hover { filter: drop-shadow(0 4px 10px color-mix(in srgb, var(--accent) 35%, transparent)); }
+.p-pet:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: var(--r-xl); }
+@keyframes p-pet-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+/* 拖着的时候：晃一晃、稍微放大；松手和单击：跳一下 */
+.p-petbox.held .p-pet { cursor: grabbing; animation: p-pet-held .5s ease-in-out infinite alternate; }
+@keyframes p-pet-held { from { transform: rotate(-7deg) scale(1.05); } to { transform: rotate(7deg) scale(1.05); } }
+.p-petbox.hop { animation: p-pet-hop .5s ease-out; }
+/* 落地：压扁一下再弹回 */
+.p-petbox.land .p-pet img { animation: p-pet-land .32s ease-out; transform-origin: 50% 100%; }
+@keyframes p-pet-land { 0% { transform: scale(1.08, .86); } 55% { transform: scale(.96, 1.05); } 100% { transform: none; } }
+@keyframes p-pet-hop { 0%, 100% { transform: translateY(0); } 35% { transform: translateY(-16px); } 60% { transform: translateY(0); } 78% { transform: translateY(-5px); } }
+/* 单击冒出的一句话和小心心 */
+/* 闲逛：离地一点轻轻飘着走、微微前倾；往右走时图左右翻过来（用 scale 属性，不和落地压扁的 transform 打架） */
+.p-petbox.flip .p-pet img { scale: -1 1; }
+.p-petbox.walk .p-pet { animation: p-pet-walk 1.2s ease-in-out infinite; }
+.p-petbox.walk .p-pet img { rotate: -2.5deg; }      /* 往左走头往左倾 */
+.p-petbox.walk.flip .p-pet img { rotate: 2.5deg; }
+@keyframes p-pet-walk { 0%, 100% { transform: translateY(-2px); } 50% { transform: translateY(-6px); } }
+.p-say { position: absolute; left: 50%; bottom: calc(100% - 6px); transform: translate(calc(-50% + var(--say-dx, 0px)), 6px); padding: 4px 11px; border-radius: 999px; white-space: nowrap;
+  font-size: 12.5px; color: var(--ink); background: var(--raised); border: 1px solid var(--bub-line);
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--ink) 12%, transparent); opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s; }
+.p-say.on { opacity: 1; transform: translate(calc(-50% + var(--say-dx, 0px)), 0); }
+/* 长的一句（答完说的结果）：换行，圆角小一点 */
+.p-say.long { white-space: normal; width: max-content; max-width: 15em; border-radius: 12px; padding: 6px 12px; line-height: 1.45; text-align: left; }
+.p-heart { position: absolute; left: var(--hx); top: 30%; font-size: var(--hs, 14px); color: var(--deco); pointer-events: none;
+  animation: p-heart 1.1s ease-out forwards; }
+@keyframes p-heart { from { opacity: .95; transform: translate(0, 0) scale(.6); } to { opacity: 0; transform: translate(var(--hd), -70px) scale(1.1); } }
+@media (prefers-reduced-motion: reduce) { .p-petbox.walk .p-pet, .p-pet, .p-petbox.hop, .p-petbox.held .p-pet, .p-heart, .p-petbox.land .p-pet img { animation: none !important; } }
+
+/* 工作台里小一点，站在底部状态栏上 */
+body:not(.portal-page) { --pet-h: clamp(120px, 17vh, 170px); }
+
+/* 工作台点桌宠弹出的随手问气泡（js/petchat.js）：放在她身旁头部高度，尖角指着她 */
+.pa { position: fixed; z-index: 41; width: min(340px, calc(100vw - 16px)); max-height: min(460px, 72vh); display: flex; flex-direction: column;
+  background: var(--raised); color: var(--ink); border: 1px solid var(--bub-line); border-radius: 14px;
+  box-shadow: 0 10px 30px color-mix(in srgb, var(--ink) 16%, transparent); font-size: 13.5px; }
+.pa[hidden] { display: none; }
+.pa::before { content: ""; position: absolute; left: -7px; top: var(--tail-y, 40px); width: 12px; height: 12px; background: inherit;
+  border: inherit; border-width: 0 0 1px 1px; border-radius: 0 0 0 3px; transform: rotate(45deg); }
+.pa.left::before { left: auto; right: -7px; border-width: 1px 1px 0 0; border-radius: 0 3px 0 0; }
+.pa-h { display: flex; align-items: center; gap: 6px; padding: 8px 8px 7px 13px; border-bottom: 1px solid var(--line); }
+.pa-h b { font-size: 13px; }
+.pa-who { font-size: 12px; color: var(--muted); }
+.pa-h .sp { flex: 1; }
+.pa-btn { font: inherit; font-size: 12px; padding: 2px 8px; border: 1px solid var(--line); border-radius: 999px; background: none; color: var(--ink); cursor: pointer; text-decoration: none; }
+.pa-btn:hover { border-color: var(--accent); }
+.pa-btn.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+.pa-x { border: 0; background: none; color: var(--muted); cursor: pointer; font-size: 13px; padding: 2px 6px; }
+.pa-x:hover { color: var(--ink); }
+.pa-msgs { flex: 1; min-height: 60px; overflow: auto; padding: 10px 13px; display: flex; flex-direction: column; gap: 9px; }
+.pa-empty { color: var(--muted); font-size: 12.5px; line-height: 1.6; }
+.pa-u { align-self: flex-end; max-width: 88%; padding: 5px 10px; border-radius: 12px; background: color-mix(in srgb, var(--accent) 12%, var(--raised)); white-space: pre-wrap; }
+.pa-a { display: grid; gap: 5px; }
+.pa-a .md-body { font-size: 13.5px; }
+.pa-a .md-body > :first-child { margin-top: 0; } .pa-a .md-body > :last-child { margin-bottom: 0; }
+.pa-a .md-body pre { font-size: 12px; max-width: 100%; overflow: auto; }
+.pa-step { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+.pa-err { font-size: 12.5px; color: #e5534b; }
+.pa-card { border: 1px solid var(--line); border-radius: 10px; padding: 7px 10px; font-size: 12.5px; display: grid; gap: 6px; }
+.pa-card ol { margin: 0; padding-left: 18px; }
+.pa-row { display: flex; flex-wrap: wrap; gap: 6px; color: var(--muted); }
+.pa-status { padding: 0 13px; font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+.pa-status:empty { display: none; }
+.pa-in { display: flex; align-items: flex-end; gap: 6px; padding: 8px 8px 8px 12px; border-top: 1px solid var(--line); }
+.pa-in textarea { flex: 1; resize: none; border: 0; outline: 0; background: none; color: inherit; font: inherit; line-height: 1.5; max-height: 110px; padding: 3px 0; }
+.pa-send { flex: none; height: 28px; min-width: 28px; padding: 0 8px; border: 0; border-radius: 999px; background: var(--accent); color: #fff; cursor: pointer; font-size: 12px; }
+.pa-send.stop { background: var(--line2); color: var(--ink); }
+.pa-send[hidden] { display: none; }
+
+/* 桌面程序的聊天小窗（petchat.html）：气泡铺满窗口，没有尖角 */
+body.petchat-page { margin: 0; overflow: hidden; background: var(--raised); }
+:root:root .pa.solo { position: fixed; inset: 0; width: auto; max-height: none; border-radius: 0; border: 0; box-shadow: none; }   /* 压过主题给气泡的墨线和影子 */
+:root:root .pa.solo::before { display: none; }
+.pa.solo .pa-h { -webkit-app-region: no-drag; }

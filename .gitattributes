@@ -1,0 +1,6 @@
+# 换行：批处理和 PowerShell 脚本必须是 CRLF（含中文的 .bat 用 LF 会出错），其余交给 git 自动处理
+* text=auto
+*.bat text eol=crlf
+*.ps1 text eol=crlf
+*.png binary
+*.ico binary

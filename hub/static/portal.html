@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IrisAI</title>
+<link rel="icon" type="image/png" href="/s/img/app.png">
+<link rel="stylesheet" href="/s/css/app.css">
+<link rel="stylesheet" href="/s/css/portal.css">
+<link rel="stylesheet" href="/s/css/pet.css">
+<script>try { const l = JSON.parse(localStorage.getItem('look') || '{}'); if (l.mode) document.documentElement.dataset.theme = l.mode;
+  if (l.skin && l.skin !== 'default') { document.documentElement.dataset.skin = l.skin; document.write('<link rel="stylesheet" id="skin-css" href="/s/skins/' + encodeURIComponent(l.skin) + '/skin.css">'); } } catch (e) {}</script>
+</head>
+<body class="portal-page">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="ic-chat" viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></symbol>
+  <symbol id="ic-files" viewBox="0 0 24 24"><path d="M4 6a2 2 0 0 1 2-2h4l2 2h6a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z" fill="none" stroke="currentColor" stroke-width="1.7"/></symbol>
+  <symbol id="ic-tr" viewBox="0 0 24 24"><path d="M4 6h9M8.5 4v2M6 6c0 4 3 7 6 8M11 6c-1 4-4 7-7 8M13 20l4-10 4 10M14.5 17h5" fill="none" stroke="currentColor" stroke-width="1.7"/></symbol>
+  <symbol id="ic-img" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-9 9"/></g></symbol>
+  <symbol id="ic-ocr" viewBox="0 0 24 24"><path d="M4 8V5h3M17 5h3v3M20 16v3h-3M7 19H4v-3M8 10h8M8 14h5" fill="none" stroke="currentColor" stroke-width="1.7"/></symbol>
+  <symbol id="ic-kb" viewBox="0 0 24 24"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3zM5 17a3 3 0 0 1 3-3h11" fill="none" stroke="currentColor" stroke-width="1.7"/></symbol>
+  <symbol id="ic-set" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/></g></symbol>
+  <symbol id="ic-doc" viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6zM14 3v4h4" fill="none" stroke="currentColor" stroke-width="1.7"/></symbol>
+  <symbol id="ic-dir" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" fill="currentColor" opacity=".55"/></symbol>
+  <symbol id="ic-pic" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M20 15l-4-4-8 8"/></g></symbol>
+  <symbol id="ic-side" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16"/></g></symbol>
+  <symbol id="ic-palette" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3a9 9 0 1 0 0 18c1 0 1.5-.8 1.5-1.5 0-1.2-1-1.5-1-2.5s.8-1.5 2-1.5H17a4 4 0 0 0 4-4c0-4.6-4-8.5-9-8.5z"/><circle cx="7.5" cy="11" r="1"/><circle cx="10.5" cy="7" r="1"/><circle cx="15" cy="7.5" r="1"/></g></symbol>
+  <symbol id="ic-search" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4.5-4.5"/></g></symbol>
+  <symbol id="ic-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></symbol>
+  <symbol id="ic-up" viewBox="0 0 24 24"><path d="M12 19V6M6 11l6-6 6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="ic-stop" viewBox="0 0 24 24"><rect x="7" y="7" width="10" height="10" rx="2" fill="currentColor"/></symbol>
+  <symbol id="ic-refresh" viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 5v6h-6" fill="none" stroke="currentColor" stroke-width="1.7"/></symbol>
+</svg>
+<div class="portal" id="portal">
+  <div class="titlebar">
+    <a class="brand" href="/" title="入口页"><span class="logo"><span class="flower" style="background:#fff;width:12px;height:12px"></span></span>IrisAI</a>
+    <span class="sp"></span>
+    <button type="button" class="btn sm" id="p-tune" hidden title="调整右侧立绘的位置、大小和中间卡片的宽度">调整布局</button>
+    <a class="btn sm" href="/app">打开工作台</a>
+    <div class="tb-right"></div>
+  </div>
+
+  <!-- 调整布局：拖立绘改位置，滑块改立绘大小和卡片宽度；记在本机 -->
+  <div class="p-tunebar" id="p-tunebar" hidden>
+    <span class="hint">拖动立绘改位置，在立绘上滚动滚轮改大小</span>
+    <label>立绘大小 <input type="range" id="p-tune-s" min="60" max="180" step="1"><output id="p-tune-s-v"></output></label>
+    <label>卡片宽度 <input type="range" id="p-tune-w" min="720" max="1600" step="10"><output id="p-tune-w-v"></output></label>
+    <label title="从立绘的哪个高度开始变淡；100% 就是不淡出">渐隐起点 <input type="range" id="p-tune-fa" min="30" max="100" step="1"><output id="p-tune-fa-v"></output></label>
+    <label title="多长一段淡完；0 就是一刀切">渐隐长度 <input type="range" id="p-tune-fl" min="0" max="40" step="1"><output id="p-tune-fl-v"></output></label>
+    <button type="button" class="btn sm" id="p-tune-face" hidden title="立绘在什么情况下换什么表情">表情…</button>
+    <button type="button" class="btn sm" id="p-tune-reset">恢复默认</button>
+    <button type="button" class="btn sm primary" id="p-tune-done">完成</button>
+  </div>
+  <div class="p-facepanel" id="p-facepanel" hidden></div>
+
+  <main class="p-main">
+    <!-- 左边：桌宠。上面的对话气泡就是随手问（9B 轻量 Agent），下面站着看板娘，点她收起或展开气泡 -->
+    <aside class="p-pet-col" id="p-pet-col">
+      <div class="p-chat p-bubble">
+        <div class="p-chat-h">
+          <div class="p-chat-t">
+            <b><span class="flower"></span>随手问</b><span class="hint">Qwen3.5 9B · CPU</span>
+          </div>
+          <span class="sp"></span>
+          <a class="btn sm" id="p-open" href="/app" hidden title="在工作台里接着这个对话">工作台打开</a>
+          <button type="button" class="btn sm" id="p-new" title="开始一个新话题">新话题</button>
+          <button type="button" class="btn sm p-fold" id="p-fold" title="收起对话">收起</button>
+        </div>
+        <svg class="p-tail" id="p-tail" aria-hidden="true"><path class="f"/><path class="s"/></svg>
+        <div class="p-msgs" id="p-msgs">
+        </div>
+        <div class="composer">
+          <div class="box">
+            <textarea id="p-input" placeholder="问点什么"></textarea>
+            <div class="tools">
+              <div class="pop kb-pop p-persona-pop" id="p-persona-pop"></div>
+              <button type="button" class="dd" id="p-persona" title="随手问用哪个人格（知识库的人格层）"><span class="dd-lb">人格</span><span class="dd-cv">▾</span></button>
+              <span class="hint" id="p-status"></span>
+              <button class="stop" id="p-stop" hidden title="停止"><svg class="i"><use href="#ic-stop"/></svg>停止</button>
+              <button class="send" id="p-send" title="发送（Enter）"><svg class="i"><use href="#ic-up"/></svg></button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- 桌宠：可以拖到任何地方；单击有反应，双击回到原位 -->
+      <div class="p-petbox" id="p-petbox">
+        <span class="p-say" id="p-say" role="status"></span>
+        <button type="button" class="p-pet" id="p-pet"><img data-pet-img alt="看板娘"></button>
+      </div>
+    </aside>
+
+    <!-- 中间：问候、功能入口、最近的对话、状态。装饰件都带 deco-only，外观里关掉装饰就只剩内容 -->
+    <section class="p-stage">
+      <div class="p-hero">
+        <div class="p-hero-bg deco-only" aria-hidden="true">
+          <span class="p-tone"></span>
+          <span class="p-word"></span>
+          <svg class="p-eye" viewBox="0 0 220 150" aria-hidden="true">
+            <defs><radialGradient id="eye-g" cx="40%" cy="35%" r="70%"><stop offset="0" stop-color="var(--eye-1)"/><stop offset="1" stop-color="var(--eye-2)"/></radialGradient>
+              <path id="eye-h" d="M0 5C-6 1 -7 -2 -6 -4.5C-4.5 -7 -1.5 -6.5 0 -3.5C1.5 -6.5 4.5 -7 6 -4.5C7 -2 6 1 0 5z"/></defs>
+            <g fill="none" stroke="var(--eye-cord)" stroke-width="2.6" stroke-linecap="round">
+              <path d="M84 72C58 44 34 98 12 62"/><path d="M136 74C164 104 186 46 208 74"/><path d="M104 104C92 124 120 130 112 146"/>
+            </g>
+            <g fill="var(--eye-heart)"><use href="#eye-h" x="10" y="58"/><use href="#eye-h" x="209" y="70"/><use href="#eye-h" x="112" y="142"/></g>
+            <circle cx="110" cy="74" r="32" fill="url(#eye-g)" stroke="var(--eye-cord)" stroke-width="2.4"/>
+            <path d="M88 74Q110 92 132 74" fill="none" stroke="var(--eye-lid)" stroke-width="3" stroke-linecap="round"/>
+            <path d="M95 81l-3 6M103 85l-1.5 6.5M110 86v6.5M117 85l1.5 6.5M125 81l3 6" stroke="var(--eye-lid)" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <span class="flower fall" style="--x:58%;--d:-2s;--t:13s"></span>
+          <span class="flower fall" style="--x:70%;--d:-7s;--t:16s;--s:13px"></span>
+          <span class="flower fall" style="--x:82%;--d:-4s;--t:11s;--s:8px"></span>
+          <span class="flower fall" style="--x:92%;--d:-10s;--t:15s"></span>
+          <span class="flower fall" style="--x:46%;--d:-12s;--t:18s;--s:7px"></span>
+          <span class="spark tw" style="left:52%;top:22%"></span>
+          <span class="spark tw" style="left:76%;top:58%;--d:1.2s;width:12px;height:12px"></span>
+          <span class="spark tw" style="left:90%;top:18%;--d:.6s;width:7px;height:7px"></span>
+        </div>
+        <img class="p-art" data-skin-img="art" alt="">
+        <div class="p-hero-t">
+          <div class="p-date"><span class="spark"></span><span id="p-date"></span></div>
+          <h1><span class="mk" id="p-hi">你好</span></h1>
+        </div>
+      </div>
+
+      <div class="p-sec-h"><span class="flower"></span>功能</div>
+      <div class="p-cards">
+        <a class="p-card" href="/app?mod=chat"><i class="no">01</i><span class="ic"><svg class="i"><use href="#ic-chat"/></svg></span><em>CHAT</em><b>对话</b><span class="flower cf deco-only"></span></a>
+        <a class="p-card" href="/app?mod=tr"><i class="no">02</i><span class="ic"><svg class="i"><use href="#ic-tr"/></svg></span><em>TRANSLATE</em><b>翻译</b><span class="flower cf deco-only"></span></a>
+        <a class="p-card" href="/app?mod=ocr"><i class="no">03</i><span class="ic"><svg class="i"><use href="#ic-ocr"/></svg></span><em>OCR</em><b>识字</b><span class="flower cf deco-only"></span></a>
+        <a class="p-card" href="/app?mod=img"><i class="no">04</i><span class="ic"><svg class="i"><use href="#ic-img"/></svg></span><em>IMAGE</em><b>图像</b><span class="flower cf deco-only"></span></a>
+        <a class="p-card" href="/app?mod=kb"><i class="no">05</i><span class="ic"><svg class="i"><use href="#ic-kb"/></svg></span><em>KNOWLEDGE</em><b>知识库</b><span class="flower cf deco-only"></span></a>
+        <a class="p-card" href="/app?mod=set"><i class="no">06</i><span class="ic"><svg class="i"><use href="#ic-set"/></svg></span><em>SETTINGS</em><b>设置</b><span class="flower cf deco-only"></span></a>
+      </div>
+
+      <div class="p-lower">
+        <div class="p-panel">
+          <div class="p-sec-h"><span class="spark"></span>最近的对话</div>
+          <div class="p-recent" id="p-recent"><div class="hint">读取中……</div></div>
+        </div>
+        <div class="p-panel">
+          <div class="p-sec-h"><span class="spark"></span>状态</div>
+          <div class="p-stat" id="p-stat"><div class="hint">读取中……</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 右边：主题的大立绘（主题素材里有“立绘”、窗口够宽才显示；窄了立绘回到横幅里） -->
+    <aside class="p-art-col deco-only" aria-hidden="true"><img class="p-side-art" data-skin-img="art" alt=""></aside>
+  </main>
+</div>
+<script src="/s/vendor/marked.min.js"></script>
+<script src="/s/vendor/purify.min.js"></script>
+<script type="module" src="/s/js/portal.js"></script>
+</body>
+</html>

@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IrisAI 随手问</title>
+<!-- 桌面程序里点桌面桌宠弹出的聊天小窗（scripts/desktop_app.py 开的窗口，js/petchat.js 的 solo 模式） -->
+<link rel="icon" type="image/png" href="/s/img/app.png">
+<link rel="stylesheet" href="/s/css/app.css">
+<link rel="stylesheet" href="/s/css/pet.css">
+<script>try { const l = JSON.parse(localStorage.getItem('look') || '{}'); if (l.mode) document.documentElement.dataset.theme = l.mode;
+  if (l.skin && l.skin !== 'default') { document.documentElement.dataset.skin = l.skin; document.write('<link rel="stylesheet" id="skin-css" href="/s/skins/' + encodeURIComponent(l.skin) + '/skin.css">'); } } catch (e) {}</script>
+</head>
+<body class="petchat-page">
+<script src="/s/vendor/marked.min.js"></script>
+<script src="/s/vendor/purify.min.js"></script>
+<script type="module">
+import { api } from '/s/js/api.js';
+import { applySkin } from '/s/js/skin.js';
+import { initSolo } from '/s/js/petchat.js';
+const cfg = await api('/api/config').catch(() => null);
+const l = cfg?.settings?.look || {}, r = document.documentElement;
+if (l.accent) r.style.setProperty('--accent', l.accent);
+if (l.radius != null) r.style.setProperty('--radius', l.radius + 'px');
+if (l.fs) r.style.setProperty('--fs', l.fs + 'px');
+r.dataset.theme = l.mode || 'system';
+await applySkin(l.skin);
+initSolo();
+</script>
+</body>
+</html>

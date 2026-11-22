@@ -1,0 +1,306 @@
+/* 入口页：左边问候和功能入口（偏二次元：网点、描边大字、落花、彩色编号卡片），右边窄栏是随手问（9B 轻量 Agent）。
+   主题素材里有“看板”时换成桌宠布局（见文件后面“桌宠布局”）：左边看板娘，上面的对话气泡就是随手问；
+   主题还有“立绘”、窗口够宽时，右边一栏放大立绘。默认主题不变。
+   颜色、圆角、按钮沿用 app.css；装饰件带 deco-only，外观里关掉装饰就不显示 */
+body.portal-page { overflow: hidden; }
+.portal { display: grid; grid-template-rows: 38px minmax(0, 1fr); height: 100vh; }
+.portal .titlebar { gap: 12px; }
+.portal .brand { min-width: 0; color: var(--ink); text-decoration: none; }
+.portal .titlebar .sp { flex: 1; }
+.portal .titlebar .btn { text-decoration: none; color: var(--ink2); }
+.portal .tb-right { min-width: 0; }
+.p-main { display: grid; grid-template-columns: minmax(0, 1fr) clamp(320px, 30vw, 400px); min-height: 0; }
+
+/* ---------------- 左边 ---------------- */
+.p-stage { overflow: auto; padding: 20px 28px 28px; display: grid; align-content: start; gap: 4px; }
+.p-stage > * { width: 100%; max-width: var(--stage-w, 1080px); justify-self: center; }   /* --stage-w：“调整布局”里的卡片宽度 */
+
+.p-hero { position: relative; overflow: hidden; min-height: 188px; padding: 36px 32px 32px; display: flex; align-items: flex-end;
+          border: 1px solid color-mix(in srgb, var(--accent) 25%, var(--line)); border-radius: var(--r-xl);
+          background: linear-gradient(118deg, color-mix(in srgb, var(--accent) 24%, var(--panel)) 0%,
+                                               color-mix(in srgb, var(--accent) 8%, var(--panel)) 48%,
+                                               color-mix(in srgb, var(--deco) 26%, var(--panel)) 100%); }
+.p-hero-bg { position: absolute; inset: 0; pointer-events: none; }
+/* 漫画网点，从左往右渐渐出现 */
+.p-tone { position: absolute; inset: 0; background-image: radial-gradient(color-mix(in srgb, var(--ink) 16%, transparent) 1.1px, transparent 1.5px);
+          background-size: 9px 9px; -webkit-mask-image: linear-gradient(105deg, transparent 35%, #000 92%); mask-image: linear-gradient(105deg, transparent 35%, #000 92%); }
+/* 右下角的描边大字（文字放在 content 里，主题可以换） */
+.p-word::before { content: "LOCAL\A ASSISTANT"; white-space: pre; }
+.p-word { position: absolute; right: 26px; bottom: 14px; text-align: right; white-space: nowrap;
+          font: italic 900 clamp(34px, 5.2vw, 64px)/.92 "Segoe UI Black", "Arial Black", "Microsoft YaHei UI", sans-serif; letter-spacing: .02em;
+          color: transparent; -webkit-text-stroke: 1.3px color-mix(in srgb, var(--ink) 20%, transparent); }
+.p-hero-t { position: relative; }
+/* 主题用的位置：第三只眼图形（只在古明地恋主题显示）、立绘（主题素材里有“立绘”才显示） */
+.p-eye { display: none; }
+.p-art { display: none; position: absolute; right: 3%; bottom: 0; height: calc(100% - 10px); max-width: 45%; object-fit: contain; object-position: right bottom; pointer-events: none; }
+:root[data-skin-art] .p-art { display: block; }
+:root[data-skin-art] .p-hero { min-height: 240px; }
+.p-date { display: flex; align-items: center; gap: 8px; font-size: var(--t-xs); letter-spacing: .14em; color: var(--ink2); }
+.p-hero h1 { margin: 4px 0 8px; font-size: 32px; line-height: 1.25; font-weight: 800; letter-spacing: .06em; }
+.p-hero h1 .mk { background: linear-gradient(transparent 52%, color-mix(in srgb, var(--deco) 45%, transparent) 52%, color-mix(in srgb, var(--deco) 45%, transparent) 80%, transparent 80%); padding: 0 4px; }
+.p-hero p { margin: 0; color: var(--ink2); font-size: var(--t-md); }
+/* 落花和闪光 */
+.p-hero .fall { position: absolute; top: -16px; left: var(--x); width: var(--s, 10px); height: var(--s, 10px); opacity: .75;
+                animation: p-fall var(--t, 14s) linear var(--d, 0s) infinite; }
+@keyframes p-fall { 0% { transform: translate(0, 0) rotate(0); opacity: 0; } 8% { opacity: .8; }
+                    100% { transform: translate(-90px, 240px) rotate(340deg); opacity: 0; } }
+.p-hero .tw { position: absolute; animation: p-tw 2.6s ease-in-out var(--d, 0s) infinite; }
+@keyframes p-tw { 0%, 100% { opacity: .25; transform: scale(.7); } 50% { opacity: .9; transform: scale(1.1); } }
+@media (prefers-reduced-motion: reduce) {
+  .p-hero .fall { animation: none; top: 30%; opacity: .5; }
+  .p-hero .tw { animation: none; opacity: .6; }
+}
+
+.p-sec-h { display: flex; align-items: center; gap: 8px; font-size: var(--t-sm); font-weight: 700; color: var(--ink); padding: 20px 2px 12px; }
+.p-sec-h small { font-size: var(--t-2xs); font-weight: 700; letter-spacing: .16em; color: var(--muted); margin-left: 2px; }
+
+/* 功能卡片：每张有自己的颜色 --c */
+.p-cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.p-card:nth-child(1) { --c: #5b8def; } .p-card:nth-child(2) { --c: #e0779a; } .p-card:nth-child(3) { --c: #3fb2a5; }
+.p-card:nth-child(4) { --c: #9b7be0; } .p-card:nth-child(5) { --c: #e3a64c; } .p-card:nth-child(6) { --c: #6f9fc4; }
+.p-card { position: relative; overflow: hidden; display: grid; justify-items: start; align-content: start; gap: 2px; padding: 16px 16px 16px;
+          border: 1px solid var(--line); border-radius: var(--r-xl); color: var(--ink); text-decoration: none;
+          background: linear-gradient(155deg, color-mix(in srgb, var(--c) 12%, var(--panel)), var(--panel) 62%);
+          transition: border-color .15s, transform .15s, box-shadow .15s; }
+.p-card::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 3px; background: linear-gradient(90deg, var(--c), color-mix(in srgb, var(--c) 30%, var(--deco))); }
+.p-card:hover { border-color: color-mix(in srgb, var(--c) 60%, var(--line2)); transform: translateY(-2px);
+                box-shadow: 0 10px 26px color-mix(in srgb, var(--c) 22%, transparent); }
+.p-card .no { position: absolute; right: 12px; top: 8px; font: italic 900 34px/1 "Segoe UI Black", "Arial Black", sans-serif;
+              color: transparent; -webkit-text-stroke: 1.2px color-mix(in srgb, var(--c) 50%, transparent); }
+.p-card .ic { width: 38px; height: 38px; border-radius: var(--r-md); display: grid; place-items: center; margin-bottom: 8px;
+              background: color-mix(in srgb, var(--c) 18%, transparent); color: var(--c); }
+.p-card .ic svg.i { width: 20px; height: 20px; }
+.p-card em { font-style: normal; font-size: var(--t-2xs); font-weight: 700; letter-spacing: .16em; color: var(--c); }
+.p-card b { font-size: var(--t-lg); font-weight: 700; letter-spacing: .04em; }
+.p-card small { color: var(--muted); font-size: var(--t-sm); line-height: 1.5; margin-top: 2px; }
+.p-card .cf { position: absolute; right: -8px; bottom: -8px; width: 44px; height: 44px; opacity: .14; background: var(--c); transform: rotate(18deg);
+              transition: transform .4s ease, opacity .2s; }
+.p-card:hover .cf { transform: rotate(80deg); opacity: .28; }
+
+/* 最近的对话、状态 */
+.p-lower { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 12px; margin-top: 8px; }
+.p-panel { border: 1px solid var(--line); border-radius: var(--r-xl); background: var(--side); padding: 0 16px 16px; min-width: 0; }
+.p-panel .p-sec-h { padding-top: 12px; }
+.p-recent { display: grid; gap: 2px; }
+.p-recent a { display: flex; gap: 8px; align-items: baseline; padding: 8px 12px; border-radius: var(--r-md); color: var(--ink2); text-decoration: none; font-size: var(--t-sm); }
+.p-recent a:hover { background: var(--hover); color: var(--ink); }
+.p-recent a span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.p-recent a small { color: var(--muted); font-size: var(--t-xs); flex: none; }
+.p-stat { display: grid; gap: 8px; font-size: var(--t-sm); color: var(--ink2); }
+.p-stat .kv span:last-child { color: var(--ink); }
+.p-stat .meter { margin-top: 2px; }
+
+/* ---------------- 右边：随手问（桌宠布局里是左边的对话气泡） ---------------- */
+.p-pet-col { order: 2; display: flex; flex-direction: column; min-height: 0; min-width: 0; border-left: 1px solid var(--line); background: var(--side); }
+.p-bubble { flex: 1; }
+.p-art-col, .p-chat-h .p-fold, .p-tail { display: none; }
+.p-chat { display: flex; flex-direction: column; min-height: 0; min-width: 0; }
+.p-chat-h { flex: none; display: flex; align-items: center; gap: 8px; padding: 12px 12px 12px 16px; border-bottom: 1px solid var(--line); }
+.p-chat-t { display: grid; min-width: 0; }
+.p-chat-t b { display: flex; align-items: center; gap: 8px; font-size: var(--t-md); }
+.p-chat-t .hint { font-size: var(--t-xs); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.p-chat-h .sp { flex: 1; }
+.p-chat-h .btn { text-decoration: none; color: var(--ink2); white-space: nowrap; flex: none; padding: 2px 12px; }
+.p-msgs { flex: 1; min-height: 0; overflow: auto; padding: 16px 16px 12px; display: flex; flex-direction: column; gap: 12px; }
+.p-empty { margin: auto 0; display: grid; gap: 12px; color: var(--ink2); padding: 12px 0; }
+.p-empty-t { font-size: var(--t-md); text-align: center; }
+.p-ex { display: grid; gap: 8px; }
+.p-exb { text-align: left; padding: 8px 12px; border: 1px solid var(--line); border-radius: var(--r-md); background: var(--panel); color: var(--ink2);
+         font: inherit; font-size: var(--t-sm); line-height: 1.5; cursor: pointer; transition: border-color .12s, color .12s; }
+.p-exb:hover { border-color: color-mix(in srgb, var(--accent) 45%, var(--line2)); color: var(--ink); }
+.p-u { align-self: flex-end; max-width: 90%; background: var(--raised); border: 1px solid var(--line); padding: 8px 12px; border-radius: var(--r-xl); white-space: pre-wrap; font-size: var(--t-md); }
+.p-a { display: grid; gap: 8px; font-size: var(--t-md); }
+.p-a .who { font-size: var(--t-xs); color: var(--muted); }
+.p-step { font-size: var(--t-xs); color: var(--muted); display: flex; align-items: center; gap: 8px; }
+.p-step .st.ok { color: var(--ok); } .p-step .st.err { color: #e5534b; }
+.p-a .confirm { margin: 2px 0; }
+.p-a .err-line { font-size: var(--t-sm); }
+.p-a .md-body pre { font-size: var(--t-xs); }
+.p-chat .composer { padding: 8px 12px 12px; }
+
+/* ---------------- 窄屏：上下排 ---------------- */
+@media (max-width: 1180px) { .p-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 900px) {
+  body.portal-page { overflow: auto; }
+  .portal { height: auto; min-height: 100vh; grid-template-rows: 38px auto; }
+  .p-main { grid-template-columns: minmax(0, 1fr); }
+  .p-stage { overflow: visible; padding: 16px; }
+  .p-hero { padding: 28px 20px 24px; min-height: 160px; }
+  .p-lower { grid-template-columns: minmax(0, 1fr); }
+  .p-pet-col { height: 75vh; border-left: 0; border-top: 1px solid var(--line); }
+}
+@media (max-width: 560px) { .p-cards { gap: 12px; } .p-card { padding: 16px 12px 12px; } .p-hero h1 { font-size: 26px; } }
+/* 主题素材里有“横幅”：铺在顶部横幅底下，左边盖一层底色保证文字看得清 */
+:root[data-skin-banner] .p-hero { background: linear-gradient(90deg, color-mix(in srgb, var(--panel) 88%, transparent) 25%, color-mix(in srgb, var(--panel) 15%, transparent) 70%),
+                                              var(--skin-banner) center / cover no-repeat; }
+
+/* ---------------- 桌宠布局（主题素材里有“看板”才用） ----------------
+   左边：上面是对话气泡（随手问），看板娘是桌宠，能拖动，松手后掉到窗口底部；单击有反应，双击走回原位。
+   她和气泡重叠时气泡从下往上缩让位（--bub-gap），太挤就自动收成一行浮在她头顶；尖角始终指着她（js/portal.js）。
+   表情跟着随手问的心情换（data-mood）。
+   右边：主题有“立绘”且窗口够宽时放大立绘，放在最底层，伸到卡片底下；窄了立绘回到横幅里。 */
+:root[data-skin-mascot] .p-main { grid-template-columns: clamp(300px, 22vw, 390px) minmax(0, 1fr); }
+/* 中间内容靠左排（挨着左边的气泡），调窄时空出来的地方都留给右边的立绘 */
+:root[data-skin-mascot] .p-stage > * { justify-self: start; }
+:root[data-skin-mascot] .p-pet-col { order: 0; border-left: 0; background: none; padding: 16px 0 0 16px; position: relative; z-index: 3; }   /* 拖出去的看板娘要在所有东西上面 */
+:root[data-skin-mascot] .p-bubble { position: relative; min-height: 0; border: 1px solid var(--bub-line); border-radius: calc(var(--r-xl) + 6px); background: var(--side); box-shadow: 0 10px 30px color-mix(in srgb, var(--ink) 10%, transparent); margin-bottom: var(--bub-gap, calc(var(--pet-h) + 24px)); }
+:root[data-skin-mascot] { --pet-h: clamp(150px, 24vh, 240px); }   /* --bub-line 在 pet.css */
+/* 气泡底下给看板娘让出的高度，js 按她的位置算；脚本还没跑时按她站在原位留 */
+/* 第一次排好位置之后才有动画，不然打开页面时气泡会从底部缩上来一下 */
+:root[data-skin-mascot] .p-pet-col.pet-ready .p-bubble { transition: margin-bottom .22s cubic-bezier(.2, .8, .2, 1); }
+/* 桌宠在桌面上时（网页里不放桌宠）：她站到对话框前面，对话框底边退到她头顶上方（--desk-gap，js/portal.js 的 deskArrange） */
+:root[data-skin-mascot][data-mascot=off] .p-pet-col .p-bubble { margin-bottom: var(--desk-gap, 16px); transition: margin-bottom .22s cubic-bezier(.2, .8, .2, 1); }
+:root[data-skin-mascot] .p-chat-h .p-fold { display: inline-flex; }
+
+/* 尖角：形状由 js/portal.js 的 aim() 按气泡坐标直接算（底边平贴在气泡边上，尖头偏向看板娘），
+   填气泡的底色、只描两条斜边；底边往气泡里压 2px，盖住那一段边框线，看起来和气泡连成一体 */
+:root[data-skin-mascot] .p-tail { display: block; position: absolute; left: 0; top: 0; width: 1px; height: 1px; overflow: visible; pointer-events: none; z-index: 1; }
+.p-tail .f { fill: var(--side); }
+.p-tail .s { fill: none; stroke: var(--bub-line); stroke-width: 1; stroke-linejoin: round; stroke-linecap: round; }
+:root[data-skin-mascot] .p-tail[hidden], :root[data-skin-mascot][data-mascot=off] .p-tail { display: none; }
+
+/* 桌宠本身的样式在 css/pet.css（和工作台共用） */
+@media (prefers-reduced-motion: reduce) { :root[data-skin-mascot] .p-pet-col.pet-ready .p-bubble { transition: none; } }
+
+/* 收起：气泡缩成一行，浮在看板娘头顶，跟着她走（位置 --pill-x/--pill-y 由 js/portal.js 算）；点它或“展开”打开。
+   开合的动画在 js 里（淡出缩小，再弹出来） */
+:root[data-skin-mascot] .p-pet-col.closed .p-bubble { position: fixed; left: var(--pill-x, 34px); top: var(--pill-y, 60%); width: max-content; max-width: 320px;
+  margin: 0; z-index: 41; border-radius: 999px; }
+:root[data-skin-mascot] .p-pet-col.closed :is(.p-msgs, .composer, #p-new, #p-open, .p-chat-t .hint) { display: none; }
+:root[data-skin-mascot] .p-pet-col.closed .p-chat-h { border-bottom: 0; cursor: pointer; padding: 8px 8px 8px 16px; }
+:root[data-skin-mascot][data-mascot=off] .p-pet-col.closed .p-bubble { position: relative; left: auto; top: auto; margin-top: auto; }
+
+/* 右栏立绘：没有框，也不被右栏截断。从窗口顶到底放全身，放在最底层；比右栏宽出来的部分伸到中间卡片、
+   顶栏按钮的底下，被它们盖住（它们都在上层，点击不受影响） */
+@media (min-width: 1500px) {
+  :root[data-skin-mascot][data-skin-art]:not([data-deco=off]) .p-main { grid-template-columns: clamp(300px, 19vw, 380px) minmax(0, 1fr) clamp(320px, 24vw, 520px); }
+  :root[data-skin-mascot][data-skin-art]:not([data-deco=off]) .p-art-col { display: block; position: relative; z-index: 0; min-width: 0; min-height: 0; }
+  :root[data-skin-mascot][data-skin-art]:not([data-deco=off]) .p-stage { position: relative; z-index: 1; }
+  :root[data-skin-mascot][data-skin-art]:not([data-deco=off]) .portal .titlebar { position: relative; z-index: 2; }
+  :root[data-skin-mascot][data-skin-art]:not([data-deco=off]) .p-art { display: none; }     /* 立绘挪到右栏，横幅里不再放 */
+  :root[data-skin-mascot][data-skin-art]:not([data-deco=off]) .p-hero { min-height: 220px; }
+}
+/* 半身特写（2026-11-07 用户从三版里挑的 C）：放大到窗口高度的 1.3 倍，膝盖往下渐渐淡出、出窗口，右手伸出右边；
+   右栏宽度不变（不挤中间的卡片），比右栏宽的部分伸到卡片底下，被卡片盖住 */
+.p-side-art { position: absolute; right: -40px; top: 6px; height: 130%; width: auto; max-width: none; pointer-events: none;
+  /* 脚部渐隐：从 --fade-a 开始变淡，到 --fade-b 完全透明（“调整布局”里可调；起点 100% 就是不淡出） */
+  -webkit-mask-image: linear-gradient(to bottom, #000 var(--fade-a, 62%), transparent var(--fade-b, 76%));
+  mask-image: linear-gradient(to bottom, #000 var(--fade-a, 62%), transparent var(--fade-b, 76%));
+  /* “调整布局”里拖动和缩放的结果；以右上角为基准缩放，放大时往左下长 */
+  transform: translate(var(--art-dx, 0px), var(--art-dy, 0px)) scale(var(--art-s, 1)); transform-origin: 100% 0; }
+
+/* ---------------- 调整布局（顶栏的“调整布局”打开） ---------------- */
+.p-tunebar { position: fixed; top: 46px; left: 50%; transform: translateX(-50%); z-index: 60; display: flex; align-items: center; gap: 8px 16px; flex-wrap: wrap;
+  width: max-content; max-width: calc(100vw - 32px); padding: 8px 12px 8px 16px; border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--line)); border-radius: calc(var(--r-xl) + 4px);
+  background: var(--raised); box-shadow: 0 10px 30px color-mix(in srgb, var(--ink) 18%, transparent); font-size: var(--t-sm); color: var(--ink2); }
+.p-tunebar[hidden] { display: none; }
+.p-tunebar label { display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; }
+.p-tunebar input[type=range] { width: 130px; accent-color: var(--accent); }
+.p-tunebar output { min-width: 3.6em; color: var(--ink); font-variant-numeric: tabular-nums; }
+/* 调整时立绘浮到最上层、可以拖，半透明露出底下的卡片，方便对位置 */
+:root[data-tuning] .p-art-col { z-index: 5; }
+:root[data-tuning] .p-side-art { pointer-events: auto; cursor: grab; opacity: .82; outline: 2px dashed color-mix(in srgb, var(--accent) 70%, transparent); outline-offset: -2px; }
+:root[data-tuning] .p-side-art.dragging { cursor: grabbing; }
+:root[data-tuning] .p-stage > * { outline: 1px dashed color-mix(in srgb, var(--accent) 45%, transparent); outline-offset: 2px; }
+
+@media (max-width: 900px) {
+  :root[data-skin-mascot] .p-main { grid-template-columns: minmax(0, 1fr); }
+  :root[data-skin-mascot] .p-pet-col { order: 2; height: 80vh; padding: 0 16px 8px; border-top: 0; }
+  :root[data-skin-mascot] .p-petbox { position: relative; left: 18px; top: auto; --pet-h: 130px; }
+  :root[data-skin-mascot] .p-bubble { margin-bottom: 16px; }
+  :root[data-skin-mascot] .p-pet-col.closed .p-bubble { position: relative; left: auto; top: auto; margin-top: auto; margin-bottom: 16px; }
+}
+
+/* 随手问的人格按钮和弹层（2026-11-08，替换原来的“联网”开关）；“想起了 / 记下了”一行小字 */
+.p-persona-pop { left: 0; z-index: 45; width: min(300px, calc(100vw - 48px)); max-height: 50vh; overflow: auto; }
+.p-mem { font-size: var(--t-xs); color: var(--muted); margin: 2px 0 4px; cursor: default; }
+
+/* ---------------- 大立绘的表情差分（js/artface.js）：盖在原图上，淡入淡出；位置、缩放、渐隐和原图共用同一套样式 ---------------- */
+.p-art-face { --o: 0; opacity: calc(var(--o) * var(--tune-o, 1)) !important;   /* 盖过调整模式里 .p-side-art 的半透明 */
+  transition: opacity var(--face-fade, 280ms) ease;
+  pointer-events: none !important; outline: none !important; filter: none !important; }      /* 影子留给底下的原图，叠两层会变浓 */
+:root[data-tuning] { --tune-o: .82; }
+:root[data-faces]:not([data-tuning]) .p-side-art:not(.p-art-face) { pointer-events: auto; }   /* 露出来的那部分能点一下 */
+.p-facepanel { position: fixed; top: 100px; left: 50%; transform: translateX(-50%); z-index: 60; width: min(560px, calc(100vw - 32px)); max-height: calc(100vh - 140px); overflow: auto;
+  padding: 12px 16px 12px; border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--line)); border-radius: calc(var(--r-xl) + 4px);
+  background: var(--raised); box-shadow: 0 10px 30px color-mix(in srgb, var(--ink) 18%, transparent); font-size: var(--t-sm); color: var(--ink2); display: grid; gap: 8px; }
+.p-facepanel[hidden] { display: none; }
+.p-facepanel .pf-h { display: flex; align-items: center; gap: 12px; }
+.p-facepanel .pf-h b { color: var(--ink); font-size: var(--t-sm); }
+.p-facepanel .pf-h label { display: inline-flex; align-items: center; gap: 8px; }
+.p-facepanel .pf-rows { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 16px; }
+.p-facepanel .pf-row { display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: 8px; padding: 2px 8px; border-radius: var(--r-md); }
+.p-facepanel .pf-row.now { background: color-mix(in srgb, var(--accent) 12%, transparent); }
+.p-facepanel .pf-row small { color: var(--accent); }
+.p-facepanel select { font: inherit; font-size: var(--t-xs); background: var(--panel); color: var(--ink); border: 1px solid var(--line2); border-radius: var(--r-md); height: 24px; }
+.p-facepanel .pf-sl { display: flex; flex-wrap: wrap; gap: 8px 20px; }
+.p-facepanel .pf-sl label { display: inline-flex; align-items: center; gap: 8px; }
+.p-facepanel input[type=range] { width: 130px; accent-color: var(--accent); }
+@media (max-width: 560px) { .p-facepanel .pf-rows { grid-template-columns: 1fr; } }
+/* 情绪符号层（js/artface.js）：和右栏立绘一样大的框（宽高由脚本按原图设），符号按百分比放进去，可以超出立绘上边。
+   框不带脚部渐隐、不带影子；符号弹出来、轻轻上下浮动，换的时候旧的往上淡出 */
+.p-art-mark { -webkit-mask-image: none !important; mask-image: none !important; pointer-events: none !important; outline: none !important; filter: none !important; }
+.p-art-mark img { position: absolute; height: auto; opacity: 0; transform: translateY(8px) scale(.8); transform-origin: 50% 100%;
+  transition: opacity .25s ease, transform .4s cubic-bezier(.3, 1.6, .5, 1); }
+.p-art-mark img.in { opacity: 1; transform: none; animation: mark-bob 2.8s ease-in-out .45s infinite; }
+.p-art-mark img.out { opacity: 0; transform: translateY(-10px); animation: none; transition-duration: .3s; }
+@keyframes mark-bob { 50% { transform: translateY(-5px); } }
+@media (prefers-reduced-motion: reduce) { .p-art-mark img.in { animation: none; } }
+.p-facepanel .pf-rows.two { grid-template-columns: 1fr; }
+.p-facepanel .pf-rows.two .pf-row { grid-template-columns: 1fr 120px 90px auto; }
+.p-facepanel .pf-th { color: var(--muted); font-size: var(--t-xs); padding-bottom: 0; }
+.p-facepanel select:disabled { opacity: .45; }
+
+/* ---------------- 立绘按部件叠（js/artface.js 的部件模式）：一层和原图一样大的框，部件按百分比位置放；原图留着撑尺寸、给“调整布局”拖，但看不见 ---------------- */
+.p-art-parts { pointer-events: none !important; outline: none !important; }
+.p-art-parts img { position: absolute; height: auto; max-width: none; }
+.p-art-parts img:not(.fx) { opacity: 0; transition: opacity var(--face-fade, 280ms) ease; }
+.p-art-parts img.on { opacity: 1; }
+:root[data-art-parts] img.p-side-art[data-skin-img="art"] { opacity: 0 !important; }
+:root:not([data-art-parts]) .p-art-parts { visibility: hidden; }   /* 部件全部载好之前先显示原图（js/artface.js 的 revealWhenReady） */
+:root[data-tuning][data-art-parts] .p-side-art.p-art-parts { outline: 2px dashed color-mix(in srgb, var(--accent) 70%, transparent) !important; outline-offset: -2px; }
+
+/* 表情面板的两页：按情况 / 编辑表情 */
+.p-facepanel .pf-tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line2); }
+.p-facepanel .pf-tabs button { font: inherit; font-size: var(--t-sm); padding: 4px 12px; border: 0; background: none; color: var(--ink2); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+.p-facepanel .pf-tabs button.on { color: var(--ink); font-weight: 700; border-bottom-color: var(--accent); }
+.p-facepanel .pf-ed { display: grid; gap: 12px; }
+.p-facepanel .pf-ed-h { display: flex; gap: 8px; align-items: center; }
+.p-facepanel .pf-ed-h select { flex: 1; height: 28px; font-size: var(--t-sm); }
+.p-facepanel .pf-parts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 16px; }
+.p-facepanel .pf-parts label { display: grid; grid-template-columns: 5em 1fr; align-items: center; gap: 8px; }
+.p-facepanel .pf-ed-new { display: flex; gap: 8px; }
+.p-facepanel .pf-ed-new input { flex: 1; height: 28px; font: inherit; font-size: var(--t-sm); padding: 0 8px; border: 1px solid var(--line2); border-radius: var(--r-md); background: var(--panel); color: var(--ink); }
+@media (max-width: 560px) { .p-facepanel .pf-parts { grid-template-columns: 1fr; } }
+
+/* ---------- 桌面程序的聊天小窗（点桌面桌宠弹出，/?petchat=1，js/portal.js 的 SOLO）
+   只留左边的随手问对话框，铺满小窗，样式（边框、底纹、主题装饰）和入口页的对话框一样 */
+body.p-solo { background: var(--bg); }
+body.p-solo :is(.titlebar, .p-tunebar, .p-facepanel, .p-stage, .p-art-col, .p-petbox) { display: none !important; }
+body.p-solo .portal { display: block; height: 100vh; }
+body.p-solo .p-main { display: block; height: 100%; }
+:root body.p-solo .p-pet-col { position: fixed; inset: 0; height: auto; padding: 12px; border: 0; background: none; }
+:root body.p-solo .p-pet-col .p-bubble { height: 100%; margin: 0; transition: none; }
+body.p-solo .p-chat-h .p-fold { display: inline-flex; }
+body.p-solo .p-tail { display: none !important; }
+
+/* “调整布局 → 表情… → 桌宠”页：左边大图看帧，右边每种情况一行（js/artface.js 的 petHtml） */
+.p-facepanel .pf-pet { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 12px; align-items: start; }
+.p-facepanel .pf-pet-pv { position: sticky; top: 0; display: grid; justify-items: center; gap: 4px; padding: 8px 4px; border: 1px solid var(--line2); border-radius: var(--r-lg); background: var(--panel); }
+.p-facepanel .pf-pet-pv img { width: 132px; height: 132px; object-fit: contain; }
+.p-facepanel .pf-pet-pv span { font-size: var(--t-xs); color: var(--muted); }
+.p-facepanel .pf-pet-rows { display: grid; gap: 2px; max-height: min(52vh, 460px); overflow: auto; padding-right: 4px; }
+.p-facepanel .pf-pet-rows .pf-row { grid-template-columns: minmax(0, 1fr) 150px auto; box-shadow: inset 2px 0 transparent; }
+.p-facepanel .pf-pet-rows .pf-row.changed { box-shadow: inset 2px 0 var(--accent); }
+@media (max-width: 560px) { .p-facepanel .pf-pet { grid-template-columns: 1fr; } .p-facepanel .pf-pet-pv { position: static; } }
+/* “桌宠 → 编辑表情”：单选的部件两列下拉，多选的部件（配件、脸颊、符号）一排勾选框 */
+.p-facepanel .pf-subtabs { margin: -4px 0 2px; }
+.p-facepanel .pf-subtabs button { font-size: var(--t-xs); padding: 4px 12px; }
+.p-facepanel .pf-pet-ed { display: grid; gap: 8px; max-height: min(56vh, 500px); overflow: auto; padding-right: 4px; }
+.p-facepanel .pf-pet-ed .pf-parts select { min-width: 0; width: 100%; }
+.p-facepanel .pf-pmulti { display: grid; grid-template-columns: 5em minmax(0, 1fr); gap: 8px; align-items: start; }
+.p-facepanel .pf-pmulti > span { padding-top: 4px; }
+.p-facepanel .pf-pmulti > div { display: flex; flex-wrap: wrap; gap: 4px 8px; }
+.p-facepanel .pf-chk { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px 2px 4px; border: 1px solid var(--line2); border-radius: 99px; font-size: var(--t-xs); cursor: pointer; background: var(--panel); }
+.p-facepanel .pf-chk:has(input:checked) { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, var(--panel)); }
+.p-facepanel .pf-chk input { margin: 0; accent-color: var(--accent); }

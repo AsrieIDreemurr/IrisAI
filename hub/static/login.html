@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>登录 · IrisAI</title>
+<link rel="icon" type="image/png" href="/s/img/app.png">
+<link rel="stylesheet" href="/s/css/app.css">
+<!-- 登录前读不到服务器上的设置，用本机记下的外观（深浅色、主题、强调色、圆角、装饰），和工作台保持一致 -->
+<script>try { const l = JSON.parse(localStorage.getItem('look') || '{}'), r = document.documentElement;
+  r.dataset.theme = l.mode || 'system'; r.dataset.deco = l.deco || 'on';
+  r.style.setProperty('--accent', l.accent || '#5b8def'); if (l.radius != null) r.style.setProperty('--radius', l.radius + 'px');
+  if (l.skin && l.skin !== 'default') { r.dataset.skin = l.skin; document.write('<link rel="stylesheet" href="/s/skins/' + encodeURIComponent(l.skin) + '/skin.css">');
+    // 标签页图标：主题有 icon.png 就用它（和工作台 js/skin.js 的 setIcon 同一规则）
+    const u = '/s/skins/' + encodeURIComponent(l.skin) + '/icon.png';
+    fetch(u, { method: 'HEAD' }).then(x => { if (x.ok) document.querySelector('link[rel="icon"]').href = u; }).catch(() => {}); }
+} catch (e) { document.documentElement.style.setProperty('--accent', '#5b8def'); }</script>
+<style>
+/* 登录页：一张卡片，上半截是和入口页同一路的渐变加漫画网点，下半截是密钥输入。颜色、圆角、按钮都用 app.css 的变量 */
+body.login { overflow: auto; display: grid; place-items: center; padding: 16px; min-height: 100%;
+             background: radial-gradient(ellipse 70% 55% at 50% 38%, color-mix(in srgb, var(--accent) 10%, transparent), transparent 70%), var(--bg); }
+.lg { width: min(380px, 100%); background: var(--panel); border: 1px solid var(--line2); border-radius: var(--r-xl); box-shadow: var(--shadow); overflow: hidden;
+      animation: lg-in .32s cubic-bezier(.2, .7, .3, 1); }
+@keyframes lg-in { from { opacity: 0; transform: translateY(8px) scale(.985); } }
+.lg-band { position: relative; height: 96px; overflow: hidden; border-bottom: 1px solid color-mix(in srgb, var(--accent) 22%, var(--line));
+           background: linear-gradient(118deg, color-mix(in srgb, var(--accent) 26%, var(--panel)), color-mix(in srgb, var(--accent) 8%, var(--panel)) 50%,
+                                                color-mix(in srgb, var(--deco) 30%, var(--panel))); }
+.lg-tone { position: absolute; inset: 0; background-image: radial-gradient(color-mix(in srgb, var(--ink) 16%, transparent) 1.1px, transparent 1.5px); background-size: 9px 9px;
+           -webkit-mask-image: linear-gradient(105deg, transparent 40%, #000 95%); mask-image: linear-gradient(105deg, transparent 40%, #000 95%); }
+.lg-band .flower, .lg-band .spark { position: absolute; }
+.lg { position: relative; }
+/* 图标和工作台左上角同一张：默认 IrisAI 虹膜（img/app.png），主题可以换（古明地恋主题在 skins/koishi/skin.css 换成恋之瞳） */
+.lg-logo { position: absolute; left: 24px; top: 74px; width: 44px; height: 44px; border-radius: var(--r-xl);
+           background: var(--panel) url("/s/img/app.png") center / 34px no-repeat; border: 1px solid var(--line2);
+           box-shadow: 0 0 0 4px var(--panel); z-index: 1; }
+.lg-body { padding: 34px 24px 22px; display: grid; gap: 10px; }
+.lg h1 { margin: 0; font-size: 19px; font-weight: 800; letter-spacing: .04em; }
+.lg p { margin: 0 0 4px; color: var(--ink2); font-size: 13px; line-height: 1.7; }
+.lg p code { font: 12px "Cascadia Mono", Consolas, monospace; background: var(--raised); border: 1px solid var(--line); border-radius: var(--r-sm); padding: 0 4px; user-select: all; }
+.lg input { height: 34px; font: inherit; font-size: 14px; padding: 0 12px; border: 1px solid var(--line2); border-radius: var(--r-md); background: var(--bg); color: var(--ink);
+            outline: 0; transition: border-color .15s, box-shadow .15s; }
+.lg input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent); }
+.lg input[aria-invalid=true] { border-color: #e5534b; }
+.lg .btn.primary { height: 34px; font-size: 14px; font-weight: 600; }
+.lg .err { color: #e5534b; font-size: 12.5px; min-height: 1.4em; margin-top: -2px; }
+.lg .err:empty { visibility: hidden; }
+</style>
+</head>
+<body class="login">
+<main class="lg">
+  <div class="lg-band" aria-hidden="true">
+    <span class="lg-tone"></span>
+    <span class="flower deco-only" style="right:48px;top:22px;width:14px;height:14px;opacity:.75"></span>
+    <span class="flower deco-only" style="right:92px;top:54px;width:9px;height:9px;opacity:.5;transform:rotate(25deg)"></span>
+    <span class="spark deco-only" style="right:24px;top:58px;width:11px;height:11px;opacity:.7"></span>
+  </div>
+  <span class="lg-logo" aria-hidden="true"></span>
+  <form class="lg-body" id="f">
+    <h1>IrisAI</h1>
+    <p>输入 <code>config\api_key.txt</code> 里的密钥。登录后这台设备 90 天内不用再输。</p>
+    <input type="password" id="pw" placeholder="密钥" aria-label="密钥" autofocus autocomplete="current-password">
+    <button class="btn primary" id="go">登录</button>
+    <div class="err" id="err" role="alert"></div>
+  </form>
+</main>
+<script>
+const $ = id => document.getElementById(id);
+$('pw').oninput = () => { $('pw').removeAttribute('aria-invalid'); $('err').textContent = ''; };
+$('f').onsubmit = async e => {
+  e.preventDefault();
+  if (!$('pw').value) { $('pw').focus(); return; }
+  $('go').disabled = true; $('go').textContent = '登录中…';
+  let msg = '';
+  try {
+    const r = await fetch('/api/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password: $('pw').value }) });
+    if (r.ok) { location.href = '/'; return; }
+    msg = r.status === 403 ? '密钥不对，再对一下 api_key.txt' : (await r.json().catch(() => ({}))).error || `登录失败（${r.status}）`;
+  } catch (err) { msg = '连不上网页服务，确认它在运行后再试'; }
+  $('go').disabled = false; $('go').textContent = '登录';
+  $('err').textContent = msg; $('pw').setAttribute('aria-invalid', 'true'); $('pw').select();
+};
+</script>
+</body>
+</html>

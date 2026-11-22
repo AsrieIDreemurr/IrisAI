@@ -1,0 +1,16 @@
+{
+  "host": "127.0.0.1",
+  "port": 8088,
+  "llama": "http://127.0.0.1:8080",
+  "sandbox": "sandbox",
+  "trash_dir": ".",
+  "themes_dir": "themes",
+  "allowed_dirs": [],
+  "image": {
+    "checkpoint": "NoobAI-XL-Vpred-v1.0.safetensors",
+    "steps": 28,
+    "cfg": 4.5,
+    "quality": "masterpiece, best quality, newest, absurdres, ",
+    "negative": "lowres, bad anatomy, bad hands, missing fingers, extra digits, worst quality, low quality, jpeg artifacts, watermark, signature, text"
+  }
+}
