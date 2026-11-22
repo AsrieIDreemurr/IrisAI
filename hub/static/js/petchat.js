@@ -221,7 +221,7 @@ function attach(id) {
       case 'lost': stopNote?.(); stopNote = null; recover(); break;
       case 'done': {
         stopNote?.(); stopNote = null;
-        const stopped = /停/.test(q('.pa-status').textContent);
+        const stopped = /停|Stop/.test(q('.pa-status').textContent);
         setMood(failed || stopped ? 'error' : 'done', failed || stopped ? 8000 : 6000);
         rid = null; busy(false); if (!stopped) status('');
         break;

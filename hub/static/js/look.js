@@ -7,7 +7,7 @@ import { openAsk, placeAsk } from './petchat.js';
 import { STORAGE_CARD, initStorage } from './storage.js';
 import { MODELS_CARD, initModels } from './models.js';
 
-const DEFAULTS = { accent: '#5b8def', radius: 10, fs: 14, density: 'normal', mode: 'system', deco: 'on', mascot: 'on', mascotSrc: '', skin: 'default', petMode: 'web' };   // petMode：桌宠在网页里 / 桌面上
+const DEFAULTS = { accent: '#5b8def', radius: 10, fs: 14, density: 'normal', mode: 'system', deco: 'on', mascot: 'on', mascotSrc: '', skin: 'default', petMode: 'web', lang: 'zh' };   // petMode：桌宠在网页里 / 桌面上
 const root = document.documentElement;
 let look = {};
 let saveTimer;
@@ -86,6 +86,7 @@ window.irisPetMode = mode => {
 
 export function initLook() {
   look = { ...DEFAULTS, ...(settings.data.look || {}) };
+  if (window.I18N && I18N.lang !== look.lang) { I18N.set(look.lang); return; }   // 别的设备改过语言：跟着换（会刷新页面）
   setPetFaces(settings.data.pet_faces); setPetFrames(settings.data.pet_frames);       // 桌宠表情搭配（入口页“调整布局 → 表情… → 桌宠”里改）
   const panel = document.getElementById('set-body');
   const row = (name, desc, ctl) => `<div class="set-row"><div class="set-lb"><b>${name}</b>${desc ? `<small>${desc}</small>` : ''}</div><div class="set-ctl">${ctl}</div></div>`;
@@ -96,6 +97,7 @@ export function initLook() {
       ${row('圆角', '整个页面的圆角大小，0 是直角', '<input type="range" min="0" max="16" data-k="radius"><span class="set-val" data-v="radius"></span>')}
       ${row('字号', '', '<input type="range" min="12" max="18" data-k="fs"><span class="set-val" data-v="fs"></span>')}
       ${row('密度', '对话、列表里的上下间距', '<select data-k="density"><option value="compact">紧凑</option><option value="normal">标准</option><option value="comfy">宽松</option></select>')}
+      ${row('语言', '界面文字的语言；英文时 Agent 默认也用英文回答', '<select data-k="lang"><option value="zh">中文</option><option value="en">English</option></select>')}
       ${row('深浅', '', '<select data-k="mode"><option value="system">跟随系统</option><option value="light">浅色</option><option value="dark">深色</option></select>')}
     </section>
     <section class="set-card"><div class="set-h">装饰</div>
@@ -149,6 +151,7 @@ export function initLook() {
   const onInput = e => {
     const k = e.target.dataset.k; if (!k) return;
     look[k] = e.target.type === 'range' ? +e.target.value : e.target.value;
+    if (k === 'lang') { saveSettings({ look }).catch(() => {}).finally(() => window.I18N?.set(look.lang)); return; }
     if (k === 'skin') {           // 换主题时强调色换成主题建议的颜色，之后可以再改
       const s = (list || []).find(x => x.id === look.skin);
       look.accent = s?.accent || DEFAULTS.accent; sync();
@@ -169,7 +172,7 @@ export function initLook() {
     };
     img.src = URL.createObjectURL(f);
   });
-  panel.querySelector('.cust-reset').onclick = () => { look = { ...DEFAULTS }; sync(); apply(); save(); };
+  panel.querySelector('.cust-reset').onclick = () => { look = { ...DEFAULTS, lang: look.lang }; sync(); apply(); save(); };
   let list = null;
   skins().then(l => {
     list = l;

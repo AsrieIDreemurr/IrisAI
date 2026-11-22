@@ -365,7 +365,7 @@ function attach(id) {
       case 'done': {
         stopNote?.(); stopNote = null;
         box().querySelectorAll('.cursor').forEach(e => e.classList.remove('cursor'));
-        const stopped = /停/.test($('#p-status').textContent);
+        const stopped = /停|Stop/.test($('#p-status').textContent);
         setMood(failed || stopped ? 'error' : 'done', failed || stopped ? 8000 : 6000);
         rid = null; busy(false); if (!stopped) status(''); recent(); break;
       }

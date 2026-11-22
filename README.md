@@ -1,6 +1,8 @@
 # IrisAI
 
-在自己的 Windows 电脑上运行的 AI 工作台：对话和 Agent、翻译、识字、图片和视频、知识库。模型都在本机运行，除了联网搜索，不向外发送任何内容。界面只有中文。
+中文 | [English](README.en.md)
+
+在自己的 Windows 电脑上运行的 AI 工作台：对话和 Agent、翻译、识字、图片和视频、知识库。模型都在本机运行，除了联网搜索，不向外发送任何内容。界面有中文和英文，在设置里切换。
 
 ![对话：Agent 写好网页后自己截图、拖动测试，四条验收标准逐条通过；右边查看它写的文件](docs/images/chat.png)
 
@@ -69,9 +71,7 @@
 
 ## 主题
 
-设置里可以换深浅色、强调色、圆角、字号。自己做主题见 [themes/README.md](themes/README.md)。
-
-![深色](docs/images/dark.png)
+设置里可以换语言（中文、英文）、深浅色、强调色、圆角、字号。界面是英文时，Agent 默认也用英文回答。自己做主题见 [themes/README.md](themes/README.md)。
 
 ## 文件夹
 

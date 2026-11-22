@@ -236,26 +236,29 @@ const numOrNull = v => (v ?? '').toString().trim() === '' ? null : +v;
 // 在 沙箱\图片（视频是 沙箱\视频）下哪个子文件夹（根目录返回空）
 const subOf = r => (r.show || '').replace(/^沙箱\\(图片|视频)\\?/, '').replace(/\\?[^\\]*$/, '');
 
+// 卡片说明：子文件夹名单独放（界面切成英文时，文件夹名是你起的，不翻）
+const metaHtml = (r, meta) => { const sub = subOf(r); return (sub ? `<span data-noi18n>${esc(sub)}</span>${meta ? ' · ' : ''}` : '') + esc(meta); };
+
 function vcard(r) {
   const ls = r.model === 'h3turbo' ? [{ name: '加速' }] : r.loras || [], fast = ls.filter(x => x.name === '加速' || loraBy(x.name)?.steps).length;
   const mname = (info.video_models.find(m => m.id === (r.model === 'h3turbo' ? 'h3' : r.model))?.name.replace(/（.*/, '') || r.model) +
     (fast ? ' 加速' : '') + (ls.length > fast ? ` + LoRA ${ls.length - fast}` : '');
-  const meta = [subOf(r), mname, r.size, r.length ? r.length + ' 秒' : '',
+  const meta = [mname, r.size, r.length ? r.length + ' 秒' : '',
                 r.first_frame ? '有首帧' : '', r.secs != null ? '用时 ' + r.secs + ' 秒' : ''].filter(Boolean).join(' · ');
   // 缩略图：鼠标移上去静音预览，点一下在右边播放（有完整的进度条、音量）
   return `<div class="card" title="${esc(r.prompt || '')}"><div class="vthumb" data-vpath="${esc(r.path)}"><video src="${raw(r.path)}" muted loop preload="metadata" playsinline></video>
     <svg class="i vplay"><use href="#ic-play"/></svg></div>
-    <div class="meta2">${esc(meta)}</div>
+    <div class="meta2">${metaHtml(r, meta)}</div>
     <div class="acts" data-path="${esc(r.path)}">
       <button data-act="open">播放</button><button data-act="vagain">同参数</button><button data-act="copy">复制提示词</button><button data-act="del" class="del">删除</button></div></div>`;
 }
 
 function card(r) {
   if (r.kind === 'video') return vcard(r);
-  const meta = [subOf(r), r.kind === 'edit' ? '改图' : r.kind === 'upscale' ? '放大' : (info.models.find(m => m.id === r.model)?.name || r.model) + (r.loras?.length ? ` + LoRA ${r.loras.length}` : ''),
+  const meta = [r.kind === 'edit' ? '改图' : r.kind === 'upscale' ? '放大' : (info.models.find(m => m.id === r.model)?.name || r.model) + (r.loras?.length ? ` + LoRA ${r.loras.length}` : ''),
                 r.seed != null ? '种子 ' + r.seed : '', r.secs != null ? r.secs + ' 秒' : ''].filter(Boolean).join(' · ');
   return `<div class="card" title="${esc(r.prompt || '')}"><img src="${raw(r.path)}" alt="" loading="lazy" data-zoom-src="${esc(r.path)}" draggable="true">
-    <div class="meta2">${esc(meta)}</div>
+    <div class="meta2">${metaHtml(r, meta)}</div>
     <div class="acts" data-path="${esc(r.path)}">
       <button data-act="open">打开</button><button data-act="edit">改图</button><button data-act="up">放大</button><button data-act="vid">做视频</button>
       ${r.kind === 't2i' ? '<button data-act="again">同参数</button><button data-act="copy">复制提示词</button>' : ''}<button data-act="del" class="del">删除</button></div></div>`;

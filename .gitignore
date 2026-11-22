@@ -4,6 +4,7 @@
 !/.gitignore
 !/.gitattributes
 !/README.md
+!/README.en.md
 !/LICENSE
 !/requirements.txt
 !/安装.bat

@@ -576,6 +576,9 @@ async def _loop(run, model, allow_think, web):
         # 系统提示词在知识库（knowledge\系统提示词\），每次读文件：用户改完从下一条消息起生效
         system = kb.system_prompt("精简版") + kb.persona_block(run.persona) if getattr(run, "profile", None) == "lite" else (
             kb.system_prompt("完整版") + kb.persona_block(kb.conv_persona(run.st)) + kb.norms_block(kb.conv_norms(run.st)))
+        if (load_settings().get("look") or {}).get("lang") == "en":       # 界面是英文：默认用英文回答（放最后，前面的缓存照样能用）
+            system += ("\n\n# Language\nThe user's interface is in English. Reply in English unless the user writes in another language; "
+                       "this overrides the Chinese-language rules above. File contents keep whatever language the task needs.")
         # 固定部分（系统提示词 + 工具说明）用模型自己的分词器数一次 token；以前按字数估，英文 JSON 被高估，历史只剩一半
         fixed_tok = await _fixed_tokens(model, system, schemas)
         max_chars = int(min(HISTORY_CHARS.get(model, ctx_tokens * 5), max(3000, (budget_tokens - fixed_tok - STATE_TOKENS) / run.hratio)))

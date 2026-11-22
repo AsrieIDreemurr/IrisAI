@@ -366,8 +366,8 @@ function attach(rid, turn) {
       case 'done':
         stopNote?.(); stopNote = null;
         turn.endRound(); turn.live = false; turn.sec = ((Date.now() - turn.t0) / 1000).toFixed(0); turn.sum();
-        emit('agent-mood', failed || /停止/.test(turn.q('.status-line').textContent) ? { mood: 'error', ms: 8000 } : { mood: 'done', ms: 6000 });
-        if (!/停止/.test(turn.q('.status-line').textContent)) turn.status('');
+        emit('agent-mood', failed || /停止|Stopped/.test(turn.q('.status-line').textContent) ? { mood: 'error', ms: 8000 } : { mood: 'done', ms: 6000 });
+        if (!/停止|Stopped/.test(turn.q('.status-line').textContent)) turn.status('');
         runId = null; busy(false); dock.setLive(false); loadConvs(); emit('files-refresh'); emit('status-refresh'); break;
     }
     if (atBottom) chat().scrollTop = chat().scrollHeight;
